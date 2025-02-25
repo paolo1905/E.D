@@ -1,0 +1,73 @@
+import java.util.Arrays;
+
+class Item {
+    private String nombre;
+    private double precio;
+
+    public Item(String nombre, double precio) {
+        this.nombre = nombre;
+        this.precio = precio;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " - $" + precio;
+    }
+}
+
+public class GestionInventario {
+    
+    public static void ordenarBurbuja(Item[] items) {
+        boolean intercambiado;
+        do {
+            intercambiado = false;
+            for (int i = 0; i < items.length - 1; i++) {
+                if (items[i].getPrecio() > items[i + 1].getPrecio()) {
+                    Item temp = items[i];
+                    items[i] = items[i + 1];
+                    items[i + 1] = temp;
+                    intercambiado = true;
+                }
+            }
+        } while (intercambiado);
+    }
+
+    public static void ordenarInsercion(Item[] items) {
+        for (int i = 1; i < items.length; i++) {
+            Item actual = items[i];
+            int j = i - 1;
+            while (j >= 0 && items[j].getPrecio() > actual.getPrecio()) {
+                items[j + 1] = items[j];
+                j--;
+            }
+            items[j + 1] = actual;
+        }
+    }
+
+    public static void main(String[] args) {
+        Item[] items = {
+            new Item("Perfume", 50.00),
+            new Item("Jabón", 5.99),
+            new Item("Champú", 12.49),
+            new Item("Crema", 8.75),
+            new Item("Desodorante", 4.99)
+        };
+
+        System.out.println("Inventario original:");
+        System.out.println(Arrays.toString(items));
+
+        Item[] itemsBurbuja = Arrays.copyOf(items, items.length);
+        ordenarBurbuja(itemsBurbuja);
+        System.out.println("\nInventario ordenado con Burbuja:");
+        System.out.println(Arrays.toString(itemsBurbuja));
+
+        Item[] itemsInsercion = Arrays.copyOf(items, items.length);
+        ordenarInsercion(itemsInsercion);
+        System.out.println("\nInventario ordenado con Inserción:");
+        System.out.println(Arrays.toString(itemsInsercion));
+    }
+}
