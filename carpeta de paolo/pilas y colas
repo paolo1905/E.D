@@ -1,0 +1,67 @@
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.Stack;
+
+
+
+public class pilasycolas {
+
+    public static void main(String[] args) {
+        Scanner lector=new Scanner(System.in);
+        Stack<String> pilasoperaciones=new Stack<String>();
+        String textoActual="";
+        int opcion;
+        while(true){
+            System.out.println("texto acutal en el editor: "+textoActual);
+            System.out.println("seleccione una pocion: (1) Ingresar (2) Deshacer (3)Salir");
+            System.out.println("(4) Imprimir texto completo");
+			System.out.println("(5) Imprimir desde la pila");
+            opcion = lector.nextInt();
+            lector.nextLine();
+            switch (opcion) {
+                case 1:
+                System.out.println("Escribe tu texto:");
+               String nuevotexto= lector.nextLine();
+                pilasoperaciones.push(nuevotexto);
+                textoActual+=nuevotexto;
+                    break;
+                    case 2:
+                    if (!pilasoperaciones.isEmpty()) {
+                        textoActual=pilasoperaciones.pop();
+                    }
+                    else{
+                        System.out.println("no hay texto para eliminar");
+                    }
+                        break;
+                        case 3:
+                        System.out.println("cerrando.....");
+                        lector.close();
+                        return;
+                        case 4:
+                        System.out.println("Texto actual en el editor:"+textoActual);
+                        break;
+                    case 5:
+                    if (!pilasoperaciones.isEmpty()) {
+                        System.out.println("imprimiendo los textos de la fila:");
+                        for(String texto:pilasoperaciones){
+                            System.out.println(texto);
+
+                        }
+
+                        
+                        
+                    }else{
+                        System.out.println("la pila esta vacia.");
+                    }
+                        /* sacar elementos de la pila con pop e irlos imprimiendo en pantalla:*/
+                        /* ¿cómo hacer para que imprima el texto en orden?*/
+                        break;
+            
+                default:
+                    System.out.println("opcion no valida....");
+                    break;
+            }
+
+        }
+    }
+}
