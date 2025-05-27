@@ -1,0 +1,146 @@
+package ED.UltimoParcial;
+
+import java.util.*;
+
+public class AStar
+{
+	private PriorityQueue<Cell> openSet;
+	private HashSet<Cell> closedSet;
+
+	private GameGrid game;
+
+	public AStar(GameGrid game)
+	{
+		this.game = game;
+		openSet = new PriorityQueue<>();
+		closedSet = new HashSet<>();
+	}
+
+	//Funcion en la cual deben encontrar la primera celula valida
+	//Deben utilizar Colas/Queues en una manera similar a como A*
+	//Utiliza OpenSets y ClosedSets para mirar las celulas ya revisadasS
+	public Cell fixTarget(Cell initialTarget)
+	{
+         // Crear una cola para BFS (similar al openSet de A*)
+    Queue<Cell> openQueue = new LinkedList<>();
+    // Crear un set para las celdas ya visitadas (similar al closedSet de A*)
+    HashSet<Cell> visitedSet = new HashSet<>();
+    
+    // Agregar el target inicial a la cola
+    openQueue.add(initialTarget);
+    visitedSet.add(initialTarget);
+    
+    // Mientras la cola no esté vacía
+    while (!openQueue.isEmpty())
+    {
+        // Obtener la celda actual de la cola
+        Cell currentCell = openQueue.poll();
+        
+        // Si la celda actual es válida (valor 0 en el gameSpace), la retornamos
+        if (game.getGameSpace(currentCell.getX(), currentCell.getY()) == 0)
+        {
+            return currentCell;
+        }
+        
+        // Obtener todos los vecinos de la celda actual
+        ArrayList<Cell> neighbors = game.getNeighbors(currentCell);
+        
+        // Revisar cada vecino
+        for (Cell neighbor : neighbors)
+        {
+            // Si el vecino no ha sido visitado y está dentro del grid
+            if (!visitedSet.contains(neighbor) && game.isInsideGrid(neighbor))
+            {
+                // Agregarlo a la cola y marcarlo como visitado
+                openQueue.add(neighbor);
+                visitedSet.add(neighbor);
+            }
+        }
+    }
+    
+    // Si no se encontró ninguna celda válida, retornar null
+    return null;
+	}
+
+	public ArrayList<Cell> findPath()
+	{
+		if (game.getGameSpace(game.target.getX(), game.target.getY()) == 1)
+		{
+			System.out.println("Invalid Target! Fixing");
+
+			Cell newTarget = fixTarget(game.target);
+
+			if (newTarget == null)
+			{
+				System.out.println("Unfixable Target!");
+				return new ArrayList<>();
+			}
+
+			game.target = newTarget;
+		}
+
+		openSet.clear();
+		closedSet.clear();
+
+		openSet.add(game.start);
+
+		while (!openSet.isEmpty())
+		{
+			Cell currentCell = openSet.remove();
+			closedSet.add(currentCell);
+
+			if (currentCell.equals(game.target))
+			{
+				return retracePath(game.start, game.target);
+			}
+
+			ArrayList<Cell> neighbors = game.getNeighbors(currentCell);
+
+			for (Cell n : neighbors)
+			{
+				if (closedSet.contains(n)) continue;
+
+				if (game.getGameSpace(n.getX(), n.getY()) == 1) continue;
+
+				int costToNeighbor = n.getGCost() + getDistance(currentCell, n);
+
+				if (costToNeighbor < n.getGCost() || !openSet.contains(n)) {
+					n.setGCost(costToNeighbor);
+					n.setHCost(getDistance(n, game.target));
+					n.setPreviousCell(currentCell);
+
+					if (!openSet.contains(n))
+						openSet.add(n);
+				}
+			}
+		}
+
+		return new ArrayList<Cell>();
+	}
+
+	private ArrayList<Cell> retracePath(Cell start, Cell end)
+	{
+		ArrayList<Cell> path = new ArrayList<Cell>();
+		Cell currentNode = end;
+
+		while (currentNode != start)
+		{
+			path.add(game.getCellSpace(currentNode.getX(), currentNode.getY()));
+			currentNode = currentNode.getPreviousCell();
+		}
+
+		Collections.reverse(path);
+
+		return path;
+	}
+
+	private int getDistance(Cell a, Cell b)
+	{
+		int distX = Math.abs(a.getX() - b.getX());
+		int distY = Math.abs(a.getY() - b.getY());
+
+		return distX > distY ?
+				14 * distY + 10 * (distX - distY) :
+				14 * distX + 10 * (distY - distX) ;
+	}
+}
