@@ -1,0 +1,46 @@
+public Cell fixTarget(Cell initialTarget) {
+    Queue<Cell> queue = new LinkedList<>();
+    Set<Cell> visited = new HashSet<>();
+
+    queue.add(initialTarget);
+    visited.add(initialTarget);
+
+    while (!queue.isEmpty()) {
+        Cell current = queue.poll();
+
+        // Si encontramos una celda transitable (libre), la devolvemos
+        if (game.getGameSpace(current.getX(), current.getY()) == 0) {
+            return current;
+        }
+
+        // Expandimos en todas las direcciones, incluso si hay obstáculos
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (dx == 0 && dy == 0) continue; // omitimos la celda actual
+
+                int nx = current.getX() + dx;
+                int ny = current.getY() + dy;
+
+                // Verificamos que esté dentro de los límites
+                if (!game.isInBounds(nx, ny)) continue;
+
+                Cell neighbor = game.getCellSpace(nx, ny);
+
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+    }
+
+    // Si después de expandir por toda la grilla no hay celda válida
+    return null;
+}
+
+
+
+// esto se para ponerlo en la clase gamegrid
+public boolean isInBounds(int x, int y) {
+    return x >= 0 && x < width && y >= 0 && y < height;
+}
